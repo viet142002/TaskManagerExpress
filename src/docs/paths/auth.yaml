@@ -1,0 +1,7 @@
+get:
+    summary: 'Lấy danh sách người dùng'
+    responses:
+        '200':
+            $ref: '../components/responses.yaml#/UserListResponse'
+        '404':
+            $ref: '../components/responses.yaml#/UserNotFoundResponse'

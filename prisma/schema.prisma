@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id             Int             @id @default(autoincrement())
+    email          String          @unique
+    name           String
+    password       String
+    userProfile    UserProfile?
+    taskCreated    Task[]          @relation("UserCreateTask")
+    taskIsAssigned Task[]          @relation("UserIsAssigned")
+    projects       ProjectMember[]
+    comments       Comment[]
+    uploads        Attachment[]
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
+}
+
+model UserProfile {
+    id     Int     @id @default(autoincrement())
+    avatar String?
+    userId Int     @unique
+    user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+    id          Int             @id @default(autoincrement())
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+    name        String          @db.VarChar(255)
+    description String?
+    tasks       Task[]
+    status      Status[]
+    members     ProjectMember[]
+    attachments Attachment[]
+}
+
+// Owner	Toàn quyền (tạo, chỉnh sửa, xóa dự án, quản lý thành viên, quản lý trạng thái, task, v.v.)
+// Admin	Tương tự Owner nhưng không thể xóa dự án
+// Manager	Quản lý task, trạng thái, gán quyền nhưng không thể xóa dự án hoặc thay đổi vai trò Owner/Admin
+// Member	Chỉ có thể tạo/chỉnh sửa task được giao, thay đổi trạng thái task nếu được phép
+// Viewer	Chỉ có quyền xem dự án và task, không thể chỉnh sửa gì
+
+enum Role {
+    OWNER // 0
+    ADMIN // 1
+    MANAGER // 2
+    MEMBER // 3
+    VIEWER // 4
+}
+
+model ProjectMember {
+    id        Int     @id @default(autoincrement())
+    role      Role
+    userId    Int
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    projectId Int
+    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Task {
+    id          Int          @id @default(autoincrement())
+    createdAt   DateTime     @default(now())
+    updatedAt   DateTime     @updatedAt
+    name        String       @db.VarChar(255)
+    description String?
+    startAt     DateTime?
+    devDoneAt   DateTime?
+    doneAt      DateTime?
+    creatorId   Int
+    creator     User         @relation("UserCreateTask", fields: [creatorId], references: [id])
+    assigneeId  Int?
+    assignee    User?        @relation("UserIsAssigned", fields: [assigneeId], references: [id])
+    projectId   Int
+    project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    statusId    Int
+    status      Status       @relation(fields: [statusId], references: [id])
+    attachments Attachment[]
+    comments    Comment[]
+}
+
+model Status {
+    id                  Int                @id @default(autoincrement())
+    name                String
+    isFinishTask        Boolean            @default(false)
+    isFinishDev         Boolean            @default(false)
+    projectId           Int
+    project             Project            @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    tasks               Task[]
+    outgoingTransitions StatusTransition[] @relation(name: "FromStatus")
+    incomingTransitions StatusTransition[] @relation(name: "ToStatus")
+}
+
+model StatusTransition {
+    id         Int    @id @default(autoincrement())
+    fromId     Int
+    fromStatus Status @relation("FromStatus", fields: [fromId], references: [id])
+    toId       Int
+    toStatus   Status @relation("ToStatus", fields: [toId], references: [id])
+}
+
+model Comment {
+    id          Int      @id @default(autoincrement())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    content     String
+    taskId      Int
+    task        Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+    commenterId Int
+    commenter   User     @relation(fields: [commenterId], references: [id], onDelete: Cascade)
+}
+
+enum AttachmentType {
+    FILE
+    IMAGE
+}
+
+model Attachment {
+    id         Int            @id @default(autoincrement())
+    type       AttachmentType
+    url        String
+    projectId  Int?
+    project    Project?       @relation(fields: [projectId], references: [id])
+    taskId     Int?
+    task       Task?          @relation(fields: [taskId], references: [id])
+    uploaderId Int
+    uploader   User           @relation(fields: [uploaderId], references: [id])
+}

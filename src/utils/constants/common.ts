@@ -1,0 +1,2 @@
+export const ACCESS_TOKEN_EXPIRED = 1000 * 60 * 15
+export const REFRESH_TOKEN_EXPIRED = 1000 * 60 * 60 * 24

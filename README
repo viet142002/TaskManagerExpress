@@ -1,0 +1,8 @@
+Migrate prisma
+```dash
+    npx prisma migrate dev --name <name>
+```
+Run studio prima
+```dash
+    npx prisma studio
+```
