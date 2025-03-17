@@ -13,19 +13,9 @@ export default class HttpException extends Error {
 }
 
 export const httpExceptions = {
-    badRequest: (code: string, message: string) => {
-        return new HttpException(EXCEPTIONS.BAD_REQUEST, code, message)
-    },
-    unauthorized: (code: string, message: string) => {
-        return new HttpException(EXCEPTIONS.UNAUTHORIZE, code, message)
-    },
-    forbidden: (code: string, message: string) => {
-        return new HttpException(EXCEPTIONS.FORBIDDEN, code, message)
-    },
-    notFound: (code: string, message: string) => {
-        return new HttpException(EXCEPTIONS.NOT_FOUND, code, message)
-    },
-    serverError: (code: string, message: string) => {
-        return new HttpException(EXCEPTIONS.INTERNAL_SERVER_ERROR, code, message)
-    }
+    badRequest: (code: string, message: string) => new HttpException(EXCEPTIONS.BAD_REQUEST, code, message),
+    unauthorized: (code: string, message: string) => new HttpException(EXCEPTIONS.UNAUTHORIZE, code, message),
+    forbidden: (code: string, message: string) => new HttpException(EXCEPTIONS.FORBIDDEN, code, message),
+    notFound: (code: string, message: string) => new HttpException(EXCEPTIONS.NOT_FOUND, code, message),
+    serverError: (code: string, message: string) => new HttpException(EXCEPTIONS.INTERNAL_SERVER_ERROR, code, message)
 }

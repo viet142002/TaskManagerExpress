@@ -1,10 +1,9 @@
 import dotenv from 'dotenv'
+dotenv.config()
 
 import { server } from '~/configs/server'
 import { initMiddleWares } from '~/configs/middlewares'
 import { initSocket } from '~/configs/socket'
-
-dotenv.config()
 
 initMiddleWares()
 initSocket()

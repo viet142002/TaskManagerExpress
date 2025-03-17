@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma } from '@prisma/client'
+import { ServiceCreateParams } from '~/utils/types'
 
 class UserProfileService {
     private prisma: PrismaClient
@@ -14,9 +15,10 @@ class UserProfileService {
             }
         })
     }
-    async addProfile(profileData: Prisma.UserProfileCreateInput) {
-        const data = await this.prisma.userProfile.create({
-            data: profileData
+    async addProfile(props: ServiceCreateParams<Prisma.UserProfileCreateInput>) {
+        const prisma = props?.tx || this.prisma
+        const data = await prisma.userProfile.create({
+            data: props.data
         })
         return data
     }

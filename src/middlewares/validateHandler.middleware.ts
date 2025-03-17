@@ -10,6 +10,7 @@ export const validationHandler = (req: Request, res: Response, next: NextFunctio
             .map((err) => err.msg)
             .join(', ')
         next(commonException.inputInvalid(message))
+    } else {
+        next()
     }
-    next()
 }

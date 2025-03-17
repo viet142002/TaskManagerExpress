@@ -1,3 +1,6 @@
+import { Prisma, PrismaClient } from '@prisma/client'
+import { DefaultArgs } from '@prisma/client/runtime/react-native.js'
+
 interface ISingleResponse {
     isList: false
     data: unknown
@@ -24,3 +27,19 @@ export interface IUserToken {
     name: string
     email: string
 }
+
+export type PrismaTransactionParam = Omit<
+    PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+    '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>
+export interface ServiceCreateParams<T> {
+    data: T
+    tx?: PrismaTransactionParam
+}
+export interface ServiceUpdateParams<T, K> {
+    data: T
+    queries: K
+    tx?: PrismaTransactionParam
+}
+
+export type PrimaInstance = PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>

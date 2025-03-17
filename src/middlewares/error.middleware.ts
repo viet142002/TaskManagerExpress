@@ -6,6 +6,9 @@ export default function errorMiddleware(error: HttpException, request: Request, 
     const status = error.status || 500
     const message = error.message || 'Something went wrong'
     const code = error.code || ERR_CODE.INTERNAL_SERVER_ERROR
+
+    console.log('error handler', status, message, code)
+
     response.status(status).json({
         success: false,
         status,

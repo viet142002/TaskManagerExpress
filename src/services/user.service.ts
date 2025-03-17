@@ -1,5 +1,7 @@
 import { PrismaClient, Prisma } from '@prisma/client'
 
+import { ServiceCreateParams } from '~/utils/types'
+
 class UserService {
     private prisma: PrismaClient
     constructor() {
@@ -26,9 +28,10 @@ class UserService {
             }
         })
     }
-    async addUser(userCreateData: Prisma.UserCreateInput) {
-        const { password, ...data } = await this.prisma.user.create({
-            data: userCreateData
+    async addUser(props: ServiceCreateParams<Prisma.UserCreateInput>) {
+        const prisma = props?.tx || this.prisma
+        const { password, ...data } = await prisma.user.create({
+            data: props.data
         })
         return data
     }

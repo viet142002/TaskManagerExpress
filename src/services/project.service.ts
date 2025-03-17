@@ -1,6 +1,8 @@
 import { PrismaClient, Prisma } from '@prisma/client'
 
-class UserService {
+import { ServiceCreateParams, ServiceUpdateParams } from '~/utils/types'
+
+class ProjectService {
     private prisma: PrismaClient
     constructor() {
         this.prisma = new PrismaClient()
@@ -25,19 +27,21 @@ class UserService {
             }
         })
     }
-    async addUser(userCreateData: Prisma.UserCreateInput) {
-        const { password, ...data } = await this.prisma.user.create({
-            data: userCreateData
+    async createProject(props: ServiceCreateParams<Prisma.ProjectCreateInput>) {
+        const prisma = props.tx || this.prisma
+        const project = await prisma.project.create({
+            data: props.data
         })
-        return data
+        return project
     }
-    async updateUser(id: number, userUpdateData: Prisma.UserUpdateInput) {
-        const { password, ...data } = await this.prisma.user.update({
-            where: { id },
-            data: userUpdateData
+    async updateProject(props: ServiceUpdateParams<Prisma.ProjectUpdateInput, Prisma.ProjectWhereUniqueInput>) {
+        const prisma = props.tx || this.prisma
+        const project = await prisma.project.update({
+            where: props.queries,
+            data: props.data
         })
-        return data
+        return project
     }
 }
 
-export const userService = new UserService()
+export const projectService = new ProjectService()

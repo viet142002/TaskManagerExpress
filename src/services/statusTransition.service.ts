@@ -1,43 +1,36 @@
 import { PrismaClient, Prisma } from '@prisma/client'
+import { ServiceCreateParams, ServiceUpdateParams } from '~/utils/types'
 
-class UserService {
+class StatusTransactionService {
     private prisma: PrismaClient
     constructor() {
         this.prisma = new PrismaClient()
     }
-    getUsers(props: Prisma.UserWhereInput) {
-        return this.prisma.user.findMany({
-            where: props,
-            select: {
-                id: true,
-                email: true,
-                name: true
-            }
+    getAllStatusTrans(props: Prisma.StatusTransitionWhereInput) {
+        return this.prisma.statusTransition.findMany({
+            where: props
         })
     }
-    getUser(props: Prisma.UserWhereUniqueInput) {
-        return this.prisma.user.findUnique({
-            where: props,
-            select: {
-                id: true,
-                email: true,
-                name: true
-            }
+    getStatusTrans(props: Prisma.StatusTransitionWhereUniqueInput) {
+        return this.prisma.statusTransition.findUnique({
+            where: props
         })
     }
-    async addUser(userCreateData: Prisma.UserCreateInput) {
-        const { password, ...data } = await this.prisma.user.create({
-            data: userCreateData
+    async createStatusTrans(props: ServiceCreateParams<Prisma.StatusTransitionCreateInput>) {
+        const prisma = props.tx || this.prisma
+        const status = await prisma.statusTransition.create({
+            data: props.data
         })
-        return data
+        return status
     }
-    async updateUser(id: number, userUpdateData: Prisma.UserUpdateInput) {
-        const { password, ...data } = await this.prisma.user.update({
-            where: { id },
-            data: userUpdateData
+    async updateStatusTrans(props: ServiceUpdateParams<Prisma.StatusTransitionUpdateInput, Prisma.StatusTransitionWhereUniqueInput>) {
+        const prisma = props.tx || this.prisma
+        const status = await prisma.statusTransition.update({
+            where: props.queries,
+            data: props.data
         })
-        return data
+        return status
     }
 }
 
-export const userService = new UserService()
+export const statusTransService = new StatusTransactionService()

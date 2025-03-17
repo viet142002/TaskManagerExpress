@@ -24,6 +24,7 @@ model User {
     projects       ProjectMember[]
     comments       Comment[]
     uploads        Attachment[]
+    projectOwner   Project[]
     createdAt      DateTime        @default(now())
     updatedAt      DateTime        @updatedAt
 }
@@ -37,6 +38,8 @@ model UserProfile {
 
 model Project {
     id          Int             @id @default(autoincrement())
+    creatorId   Int
+    creator     User            @relation(fields: [creatorId], references: [id])
     createdAt   DateTime        @default(now())
     updatedAt   DateTime        @updatedAt
     name        String          @db.VarChar(255)
